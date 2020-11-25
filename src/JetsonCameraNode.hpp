@@ -14,8 +14,8 @@ class JetsonCameraNode : public rclcpp::Node
 
   private:
     std::string createGStreamerPipeline();
+    void rescaleCameraInformation();
     void captureFunc();
-
     void declareParameters();
     void loadParameters();
   	

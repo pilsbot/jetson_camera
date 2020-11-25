@@ -28,24 +28,8 @@ JetsonCameraNode::JetsonCameraNode(const rclcpp::NodeOptions& options)
 	cameraInfo = cameraInfoManager.getCameraInfo();
 	cameraInfo.header.frame_id = frameId;
 
-	// Rescale camera information
-
-	double widthCoeff = static_cast<double>(width) / cameraInfo.width;
-	double heightCoeff = static_cast<double>(height) / cameraInfo.height;
-
-	cameraInfo.width = width;
-	cameraInfo.height = height;
-
-	cameraInfo.k[0] *= widthCoeff;
-	cameraInfo.k[2] *= widthCoeff;
-	cameraInfo.k[4] *= heightCoeff;
-	cameraInfo.k[5] *= heightCoeff;
-
-	cameraInfo.p[0] *= widthCoeff;
-	cameraInfo.p[2] *= widthCoeff;
-	cameraInfo.p[5] *= heightCoeff;
-	cameraInfo.p[6] *= heightCoeff;
-
+	rescaleCameraInformation();
+	
 	RCLCPP_INFO(get_logger(), "jetson_camera: Starting node with the following parameters:\n"\
 		             "capture width: %d, capture height: %d\n"\
 		             "published width: %d, published height: %d\n"\
@@ -62,6 +46,25 @@ JetsonCameraNode::JetsonCameraNode(const rclcpp::NodeOptions& options)
     {
 	isRunning = false;
 	captureThread.join();
+    }
+
+    void JetsonCameraNode::rescaleCameraInformation()
+    {
+	double widthCoeff = static_cast<double>(width) / cameraInfo.width;
+	double heightCoeff = static_cast<double>(height) / cameraInfo.height;
+
+	cameraInfo.width = width;
+	cameraInfo.height = height;
+
+	cameraInfo.k[0] *= widthCoeff;
+	cameraInfo.k[2] *= widthCoeff;
+	cameraInfo.k[4] *= heightCoeff;
+	cameraInfo.k[5] *= heightCoeff;
+
+	cameraInfo.p[0] *= widthCoeff;
+	cameraInfo.p[2] *= widthCoeff;
+	cameraInfo.p[5] *= heightCoeff;
+	cameraInfo.p[6] *= heightCoeff;
     }
 
     void JetsonCameraNode::declareParameters()
